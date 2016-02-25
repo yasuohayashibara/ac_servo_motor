@@ -431,6 +431,16 @@
               <FileType>8</FileType>
               <FilePath>.\ACMotor.cpp</FilePath>
             </File>
+            <File>
+              <FileName>RS485.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\RS485.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>AS5600.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>.\AS5600.cpp</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
