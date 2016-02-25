@@ -1,0 +1,14 @@
+.hg/
+build/
+lpcsp/
+mbed/
+*.bak
+*.bin
+*.ttl
+*.htm
+*.bat
+*.dep
+*.bld
+*.uvgui.*
+*.hgignore
+*.uvopt
