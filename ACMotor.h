@@ -49,7 +49,7 @@ public:
     void period(double seconds);
 
 
-void write(double value);
+    void write(double value);
 
     float read();
     
