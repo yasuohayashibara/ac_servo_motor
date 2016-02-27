@@ -13,8 +13,7 @@
  * #include "mbed.h"
  * #include "ACMotor.h"
  *
- * ACMotor motor(xp31, xp32, xp33);
- * ACMotor motor(xp34, xp35, xp36);
+ * ACMotor acmotor(xp31, xp32, xp33);
  *
  * int main(){
  * while(1) {
@@ -39,6 +38,7 @@ public:
       * @param Pin Pin on mbed to connect PWM device to
      */
     ACMotor(
+        PinName Ppwm,
         PinName Pu_high, PinName Pu_low,
         PinName Pv_high, PinName Pv_low,
         PinName Pw_high, PinName Pw_low,
@@ -74,11 +74,13 @@ public:
 #endif
 
 private:
-		PwmOut uh_;
-		PwmOut vh_;
-		PwmOut wh_;
+		InterruptIn pwm_int_;
+		PwmOut pwm_;
+		DigitalOut uh_;
 		DigitalOut ul_;
+		DigitalOut vh_;
 		DigitalOut vl_;
+		DigitalOut wh_;
 		DigitalOut wl_;
     InterruptIn hole1_;
     InterruptIn hole2_;

@@ -46,22 +46,25 @@ int ACMotor::switching_table[2][7] = {
 // L-H         -LH              HL-
 
 ACMotor::ACMotor(
+    PinName Ppwm,
 		PinName Pu_high, PinName Pu_low,
 		PinName Pv_high, PinName Pv_low,
 		PinName Pw_high, PinName Pw_low,
 		PinName Phole1, PinName Phole2, PinName Phole3)
-		: uh_(Pu_high), vh_(Pv_high), wh_(Pw_high), ul_(Pu_low), vl_(Pv_low), wl_(Pw_low),
+		: pwm_int_(Ppwm), pwm_(Ppwm), uh_(Pu_high), vh_(Pv_high), wh_(Pw_high), ul_(Pu_low), vl_(Pv_low), wl_(Pw_low),
 			hole1_(Phole1), hole2_(Phole2), hole3_(Phole3)
-    
 {
-//	hole1_.rise(ACMotor::status_changed);
+	pwm_.period(0.00005);		// 20kHz
+	
+	hole1_.mode(PullUp);
+	hole2_.mode(PullUp);
+	hole3_.mode(PullUp);
 	hole1_.fall(this, &ACMotor::status_changed);
 	hole1_.rise(this, &ACMotor::status_changed);
 	hole2_.fall(this, &ACMotor::status_changed);
 	hole2_.rise(this, &ACMotor::status_changed);
 	hole3_.fall(this, &ACMotor::status_changed);
 	hole3_.rise(this, &ACMotor::status_changed);
-	uh_.period(0.00005);		// 20kHz
 	this->write(0);
 }
 

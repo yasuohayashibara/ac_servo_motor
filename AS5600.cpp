@@ -10,7 +10,7 @@ AS5600::AS5600(PinName i2c_sda, PinName i2c_scl):
 
 void AS5600::updateAngle()
 {
-  char cmd[1];  
+  char cmd[1];
   char out[2];
   cmd[0] = 0x0E;
   i2c.write(SLAVE_ADRESS << 1, cmd, 1);
