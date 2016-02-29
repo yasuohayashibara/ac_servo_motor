@@ -12,21 +12,22 @@ public:
 
   void updateAngle();
 
-  float getAngle();
+  float getAngleRad();
 
-  void write(double value);
+  float getAngleDeg();
 
-  double read();
+  void write(float value);
+
+  float read();
 
   AS5600& operator= (double value) {
     write(value);
     return *this;
   }
 
-  AS5600& operator= (AS5600& rhs) {
-    write(rhs.read());
-    return *this;
-  }
+	operator float(){
+		return read();
+	}
 
 private:
   I2C i2c;

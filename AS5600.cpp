@@ -1,6 +1,10 @@
 #include "mbed.h"
 #include "AS5600.h"
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846f
+#endif
+
 #define SLAVE_ADRESS	0x36
 
 AS5600::AS5600(PinName i2c_sda, PinName i2c_scl):
@@ -15,22 +19,29 @@ void AS5600::updateAngle()
   cmd[0] = 0x0E;
   i2c.write(SLAVE_ADRESS << 1, cmd, 1);
   i2c.read(SLAVE_ADRESS << 1, out, 2);
- 
-  angle = ((out[0] << 8) + out[1]) * 0.087912087 - angle0;
+  angle = ((out[0] << 8) + out[1]) * 0.087912087f * M_PI / 180.0f - angle0;
+	while (angle > M_PI) angle -= 2.0f * M_PI;
+	while (angle < -M_PI) angle += 2.0f * M_PI;
 }
 
-float AS5600::getAngle()
+float AS5600::getAngleRad()
 {
 	return angle;
 }
 
-void AS5600::write(double value)
+float AS5600::getAngleDeg()
+{
+	return angle / M_PI * 180.0;
+}
+
+void AS5600::write(float value)
 {
 	updateAngle();
 	angle0 = (angle + angle0) - value;
 }
 
-double AS5600::read()
+float AS5600::read()
 {	
+	updateAngle();
 	return angle;
 }
