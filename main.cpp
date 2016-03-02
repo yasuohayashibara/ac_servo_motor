@@ -27,7 +27,6 @@ void isrRx() {
 	static char buf[10];
 	static int n = 0;
 	buf[n ++] = serial.getc();
-//	printf("%x\r\n", buf[n - 1]);
 	if (n >= 10) n = 0;
 	if (buf[n-1] == '\r'){
 		int t_angle;
@@ -39,7 +38,7 @@ void isrRx() {
 }
 
 int main() {
-	int previous_hole_state = acmotor.getHoleState();
+	int previous_hole_state = 6;
 	float gain = 10.0, max_value = 1.0;
 	int counter = 25;
 	initialize();
@@ -53,7 +52,6 @@ int main() {
 		float angle = as5600;
 		float val = max(min(gain * (angle - target_angle), max_value), -max_value);
 		acmotor = val;
-//		printf("%f\r\n", target_angle);
 		if (sw[0] == 0 && counter == 0){
 			target_angle += 0.1;
 			counter = 25;

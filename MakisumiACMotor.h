@@ -16,8 +16,15 @@
  * MakisumiACMotor acmotor();
  *
  * int main(){
+ * int previous_hole_state = 6;
  *   acmotor.servoOn();
- *   acmotor = 10.0;		// degree
+ *   acmotor = 0.1;		// duty ratio
+ *   while(1){
+ *	    if (acmotor.getHoleState() != previous_hole_state){
+ *       acmotor.status_changed();
+ *       previous_hole_state = acmotor.getHoleState();
+ *		  }
+ *		}
  * }
  * @endcode
  */

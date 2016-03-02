@@ -11,8 +11,6 @@
 #define HOLE_STATE4 	0x03	// 011  ( 240deg - 300deg)
 #define HOLE_STATE5 	0x01	// 001  ( 300deg - 360deg)
 
-BusOut led2(LED2, LED3, LED4);
-
 int MakisumiACMotor::switching_table[6] [3] = {
 		{ 0, -1, 1 }, // STATE1
 		{ 1, -1, 0 }, // STATE2
@@ -103,13 +101,6 @@ int MakisumiACMotor::getState()
 
 void MakisumiACMotor::status_changed(void)
 {
-/*
-	int h1 = (LPC_GPIO0->DATA >> 3) & 1;	// P0_3
-	int h2 = (LPC_GPIO1->DATA >> 0) & 1;	// P1_0
-	int h3 = (LPC_GPIO1->DATA >> 1) & 1;	// P1_1
-	
-	hole_state = (h1 << 2) + (h2 << 1) + h3;
-	*/
 	hole_state_no = 0;
 	int dir = (value_ >= 0.0) ? 1 : -2;
 	
@@ -133,7 +124,6 @@ void MakisumiACMotor::status_changed(void)
 		drive(switching_table[next_state][0],
 						switching_table[next_state][1],
 						switching_table[next_state][2]);
-		led2 = 7;
 	} else {
 		drive(-1, -1, -1);
 	}
