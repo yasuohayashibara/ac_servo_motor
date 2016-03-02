@@ -50,20 +50,6 @@ MakisumiACMotor::MakisumiACMotor(PinName Ppwm)
 	pwm_.period(0.001);		// 1kHz
 	pwm_ = 0.0;
 	
-//	hole1_.fall(this, &MakisumiACMotor::status_changed);
-//	hole1_.rise(this, &MakisumiACMotor::status_changed);
-//	hole2_.fall(this, &MakisumiACMotor::status_changed);
-//	hole2_.rise(this, &MakisumiACMotor::status_changed);
-//	hole3_.fall(this, &MakisumiACMotor::status_changed);
-//	hole3_.rise(this, &MakisumiACMotor::status_changed);
-
-	status_changed();
-	
-/*
-int state = 0;
-	printf("%d - %d, %d, %d\r\n", state, switching_table[state][0], switching_table[state][1], switching_table[state][2]);
-	drive(switching_table[state] [0], switching_table[state] [1], switching_table[state] [2]);
-	*/
 	this->write(0);
 }
 
@@ -101,6 +87,12 @@ float MakisumiACMotor::read()
 
 int MakisumiACMotor::getHoleState()
 {
+	int h1 = (LPC_GPIO0->DATA >> 3) & 1;	// P0_3
+	int h2 = (LPC_GPIO1->DATA >> 0) & 1;	// P1_0
+	int h3 = (LPC_GPIO1->DATA >> 1) & 1;	// P1_1
+	
+	hole_state = (h1 << 2) + (h2 << 1) + h3;
+
 	return hole_state;
 }
 
@@ -111,11 +103,13 @@ int MakisumiACMotor::getState()
 
 void MakisumiACMotor::status_changed(void)
 {
+/*
 	int h1 = (LPC_GPIO0->DATA >> 3) & 1;	// P0_3
 	int h2 = (LPC_GPIO1->DATA >> 0) & 1;	// P1_0
 	int h3 = (LPC_GPIO1->DATA >> 1) & 1;	// P1_1
 	
 	hole_state = (h1 << 2) + (h2 << 1) + h3;
+	*/
 	hole_state_no = 0;
 	int dir = (value_ >= 0.0) ? 1 : -2;
 	
@@ -154,13 +148,13 @@ void MakisumiACMotor::status_changed(void)
 void MakisumiACMotor::drive(int u, int v, int w)
 {
 	underChanging = true;
+
 	on_swtiching_ptn[UH] = (u == 1) ? 1 : 0;
 	on_swtiching_ptn[UL] = (u == -1) ? 1 : 0;
 	on_swtiching_ptn[VH] = (v == 1) ? 1 : 0;
 	on_swtiching_ptn[VL] = (v == -1) ? 1 : 0;
 	on_swtiching_ptn[WH] = (w == 1) ? 1 : 0;
 	on_swtiching_ptn[WL] = (w == -1) ? 1 : 0;
-//	printf("ON: %d, %d, %d, %d, %d, %d\r\n", on_swtiching_ptn[0], on_swtiching_ptn[1], on_swtiching_ptn[2], on_swtiching_ptn[3], on_swtiching_ptn[4], on_swtiching_ptn[5] );
 
 	off_swtiching_ptn[UH] = 0;
 	off_swtiching_ptn[UL] = (u == -1) ? 1 : 0;
@@ -168,7 +162,7 @@ void MakisumiACMotor::drive(int u, int v, int w)
 	off_swtiching_ptn[VL] = (v == -1) ? 1 : 0;
 	off_swtiching_ptn[WH] = 0;
 	off_swtiching_ptn[WL] = (w == -1) ? 1 : 0;
-//	printf("OFF: %d, %d, %d, %d, %d, %d\r\n", off_swtiching_ptn[0], off_swtiching_ptn[1], off_swtiching_ptn[2], off_swtiching_ptn[3], off_swtiching_ptn[4], off_swtiching_ptn[5] );
+
 	underChanging = false;
 }
 
