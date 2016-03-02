@@ -4,8 +4,6 @@
 #define ASS5600_H
 
 #include "mbed.h"
-
-#include "mbed.h"
 #include "AS5600.h"
 
 /** Class to measure angle using an absolute encoder AS5600
@@ -14,6 +12,9 @@
  * @code
  *
  * // Display Angle (Button 1: Reset Angle)
+ * #include "mbed.h" 
+ * #include "AS5600.h" 
+ *
  * BusOut led(LED1, LED2, LED3, LED4);
  * BusIn sw(SW1, SW2);
  * AS5600 as5600(I2C_SDA, I2C_SCL);

@@ -4,13 +4,6 @@
 #define RS485_H
 
 #include "mbed.h"
-#include "SerialBase.h"
-
-#include "platform.h"
-
-#include "Stream.h"
-#include "FunctionPointer.h"
-#include "serial_api.h"
 
 class RS485 : public Serial
 {
