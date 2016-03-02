@@ -2,6 +2,10 @@
 #include "MakisumiACMotor.h"
 #include "AS5600.h"
 
+#ifndef M_PI
+#define M_PI           3.14159265358979323846f
+#endif
+
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #define min(a, b) ((a) < (b) ? (a) : (b))
 
@@ -9,8 +13,9 @@ BusOut led(LED2, LED3, LED4);
 BusIn sw(SW1, SW2);
 MakisumiACMotor acmotor(LED1);
 AS5600 as5600(I2C_SDA, I2C_SCL);
-
+Serial serial(USBTX, USBRX);
 Timer t;
+float target_angle = 0;
 
 void initialize()
 {
@@ -18,14 +23,30 @@ void initialize()
 	LPC_IOCON -> SWDIO_PIO1_3 |= 0x01; 
 }
 
+void isrRx() {
+	static char buf[10];
+	static int n = 0;
+	buf[n ++] = serial.getc();
+//	printf("%x\r\n", buf[n - 1]);
+	if (n >= 10) n = 0;
+	if (buf[n-1] == '\r'){
+		int t_angle;
+		sscanf(buf, "%d", &t_angle);
+		if ((t_angle > 50) || (t_angle < -50)) return;
+		target_angle = t_angle * M_PI / 180.0f;
+		n = 0;
+	}
+}
+
 int main() {
 	int previous_hole_state = acmotor.getHoleState();
 	float gain = 10.0, max_value = 1.0;
-	float target_angle = 0;
 	int counter = 25;
 	initialize();
 	led = 0;
 	sw.mode(PullUp);
+	serial.attach(isrRx, Serial::RxIrq);
+	
 	acmotor.servoOn();
 	as5600 = as5600 - 2.3;
 	while(1){
