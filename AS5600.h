@@ -42,7 +42,9 @@ public:
 
   float getAngleDeg();
 
-  void write(float value);
+  int getError();
+
+void write(float value);
 
   float read();
 
@@ -59,6 +61,7 @@ private:
   I2C i2c;
   float angle;
   float angle0;
+	int error;
 };
 
 #endif

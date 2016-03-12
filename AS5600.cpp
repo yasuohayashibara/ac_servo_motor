@@ -17,8 +17,8 @@ void AS5600::updateAngle()
   char cmd[1];
   char out[2];
   cmd[0] = 0x0E;
-  i2c.write(SLAVE_ADRESS << 1, cmd, 1);
-  i2c.read(SLAVE_ADRESS << 1, out, 2);
+  error |= i2c.write(SLAVE_ADRESS << 1, cmd, 1);
+  error |= i2c.read(SLAVE_ADRESS << 1, out, 2);
   angle = ((out[0] << 8) + out[1]) * 0.087912087f * M_PI / 180.0f - angle0;
 	while (angle > M_PI) angle -= 2.0f * M_PI;
 	while (angle < -M_PI) angle += 2.0f * M_PI;
@@ -32,6 +32,11 @@ float AS5600::getAngleRad()
 float AS5600::getAngleDeg()
 {
 	return angle / M_PI * 180.0;
+}
+
+int AS5600::getError()
+{
+	return error;
 }
 
 void AS5600::write(float value)

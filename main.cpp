@@ -2,6 +2,12 @@
 #include "MakisumiACMotor.h"
 #include "AS5600.h"
 
+#define ID 'a'
+#define MAX_ANGLE 50
+#define MIN_ANGLE -50
+#define OFFSET 2.3 //rad
+#define GAIN 10.0
+
 #ifndef M_PI
 #define M_PI           3.14159265358979323846f
 #endif
@@ -32,8 +38,12 @@ void isrRx() {
 		if (buf[n-1] == '\r'){
 			int t_angle;
 			n = 0;
-			sscanf(buf, "%d", &t_angle);
-			if ((t_angle > 50) || (t_angle < -50)) return;
+			if (buf[0] != ID) return;
+			if (strlen(&buf[1] )!= 5) return;
+			sscanf(&buf[1], "%d", &t_angle);
+//			printf("%d\r\n", t_angle);
+			memset(buf, 0, sizeof(buf));
+			if ((t_angle > MAX_ANGLE) || (t_angle < MIN_ANGLE)) return;
 			target_angle = t_angle * M_PI / 180.0f;
 		}
 	}
@@ -41,17 +51,25 @@ void isrRx() {
 
 int main() {
 	int previous_hole_state = 6;
-	float gain = 10.0, max_value = 1.0;
+	float gain = GAIN, max_value = 1.0;
 	int counter = 25, led_counter  = 100, led_state = 0;
+	bool is_low_gain = true;
 	initialize();
 	led = 0;
 	sw.mode(PullUp);
 	serial.attach(isrRx, Serial::RxIrq);
 	
 	acmotor.servoOn();
-	as5600 = as5600 - 2.3;
+	as5600 = as5600 - OFFSET;
 	while(1){
 		float angle = as5600;
+		if (as5600.getError()) break;
+		if (is_low_gain){
+			if(fabs(angle - target_angle) < 0.1){
+				acmotor.setMaxDutyRatio(0.5);
+				is_low_gain = false;
+			}
+		}
 		float val = max(min(gain * (angle - target_angle), max_value), -max_value);
 		acmotor = val;
 		if (sw[0] == 0 && counter == 0){
@@ -78,4 +96,6 @@ int main() {
 			}
 		}
 	}
+	acmotor = 0;
+	led = 0x02;
 }
