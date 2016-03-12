@@ -11,6 +11,9 @@
 #define HOLE_STATE4 	0x03	// 011  ( 240deg - 300deg)
 #define HOLE_STATE5 	0x01	// 001  ( 300deg - 360deg)
 
+#define MIN_PWM 0.10
+#define OFFEST_PWM 0.08
+
 int MakisumiACMotor::switching_table[6] [3] = {
 		{ 0, -1, 1 }, // STATE1
 		{ 1, -1, 0 }, // STATE2
@@ -45,7 +48,7 @@ MakisumiACMotor::MakisumiACMotor(PinName Ppwm)
 
 	pwm_int_.rise(this, &MakisumiACMotor::pwmRise);
 	pwm_int_.fall(this, &MakisumiACMotor::pwmFall);
-	pwm_.period(0.001);		// 1kHz
+	pwm_.period(0.0002);		// 1kHz
 	pwm_ = 0.0;
 	
 	this->write(0);
@@ -75,7 +78,7 @@ void MakisumiACMotor::setPwmPeriod(double seconds)
 void MakisumiACMotor::write(double value)
 {
 	value_ = max(min(value, 1.0), -1.0);
-	pwm_ = fabs(max_ratio_ * value_);
+	pwm_ = min(fabs(max_ratio_ * value_) + OFFEST_PWM, 1.0);
 }
 
 float MakisumiACMotor::read()
@@ -120,7 +123,7 @@ void MakisumiACMotor::status_changed(void)
 	}
 	int next_state = (hole_state_no + dir + 6) % 6;
 
-	if (enable_){
+	if (enable_ && pwm_ >= MIN_PWM){
 		drive(switching_table[next_state][0],
 						switching_table[next_state][1],
 						switching_table[next_state][2]);
@@ -158,17 +161,22 @@ void MakisumiACMotor::drive(int u, int v, int w)
 
 void MakisumiACMotor::pwmRise(void)
 {
-	LPC_GPIO3->DATA &= ~(1<<0);	//UL
-	LPC_GPIO1->DATA &= ~(1<<10);	//VL
-	LPC_GPIO1->DATA &= ~(1<<3);	//WL
-
 	if (!underChanging)
 	{
-		if (on_swtiching_ptn[UH])	LPC_GPIO1->DATA |= (1<<2);	//UH
+		if (on_swtiching_ptn[UH]){
+			LPC_GPIO3->DATA &= ~(1<<0);	//UL
+			LPC_GPIO1->DATA |= (1<<2);	//UH
+		}
 		else	LPC_GPIO1->DATA &= ~(1<<2);	//UH
-		if (on_swtiching_ptn[VH])	LPC_GPIO1->DATA |= (1<<11);	//VH
+		if (on_swtiching_ptn[VH]){
+			LPC_GPIO1->DATA &= ~(1<<10);	//VL
+			LPC_GPIO1->DATA |= (1<<11);	//VH
+		}
 		else	LPC_GPIO1->DATA &= ~(1<<11);	//VH
-		if (on_swtiching_ptn[WH])	LPC_GPIO1->DATA |= (1<<4);	//WH
+		if (on_swtiching_ptn[WH]){
+			LPC_GPIO1->DATA &= ~(1<<3);	//WL
+			LPC_GPIO1->DATA |= (1<<4);	//WH
+		}
 		else	LPC_GPIO1->DATA &= ~(1<<4);	//WH
 	}
 
@@ -182,7 +190,9 @@ void MakisumiACMotor::pwmRise(void)
 
 void MakisumiACMotor::pwmFall(void)
 {
-	LPC_GPIO1->DATA &= ~(1<<2);	//UH
-	LPC_GPIO1->DATA &= ~(1<<11);	//VH
-	LPC_GPIO1->DATA &= ~(1<<4);	//WH
+	static int mask = ~(1<<2) & ~(1<<11) & ~(1<<4);
+	LPC_GPIO1->DATA &= mask;
+//	LPC_GPIO1->DATA &= ~(1<<2);	//UH
+//	LPC_GPIO1->DATA &= ~(1<<11);	//VH
+//	LPC_GPIO1->DATA &= ~(1<<4);	//WH
 }

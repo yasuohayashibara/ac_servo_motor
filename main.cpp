@@ -1,4 +1,4 @@
-#define R1
+//#define R1
 
 #include "mbed.h"
 #include "MakisumiACMotor.h"
@@ -63,7 +63,7 @@ void isrRx() {
 			if (buf[0] != ID) return;
 			if (strlen(&buf[1] )!= 5) return;
 			sscanf(&buf[1], "%d", &t_angle);
-//			printf("%d\r\n", t_angle);
+			printf("%d\r\n", t_angle);
 			memset(buf, 0, sizeof(buf));
 			if ((t_angle > MAX_ANGLE) || (t_angle < MIN_ANGLE)) return;
 			target_angle = t_angle * M_PI / 180.0f;
@@ -89,6 +89,7 @@ int main() {
 	as5600 = as5600 - OFFSET;
 	while(1){
 		float angle = as5600;
+//		printf("%f\r\n", angle);
 		if (as5600.getError()) break;
 		if (is_low_gain){
 			if(fabs(angle - target_angle) < 0.1){
@@ -123,6 +124,7 @@ int main() {
 			if (acmotor.getHoleState() != previous_hole_state){
 				acmotor.status_changed();
 				previous_hole_state = acmotor.getHoleState();
+//				printf("%d\r\n", previous_hole_state);
 			}
 		}
 	}
