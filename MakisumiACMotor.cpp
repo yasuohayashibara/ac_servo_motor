@@ -30,7 +30,7 @@ DigitalOut wl(MOTOR_WL);
 MakisumiACMotor::MakisumiACMotor(PinName Ppwm)
 		: pwm_int_(Ppwm), pwm_(Ppwm), 
 		hole1_(MOTOR_HOLE1), hole2_(MOTOR_HOLE2), hole3_(MOTOR_HOLE3),
-		max_ratio_(0.2), underChanging(false)
+		max_ratio_(0.3), enable_(false), underChanging(false)
 {
 	LPC_IOCON -> SWDIO_PIO1_3 |= 0x01; 
 	for(int i = 0; i < 32; i ++)

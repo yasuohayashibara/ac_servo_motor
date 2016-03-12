@@ -1,11 +1,32 @@
+#define R1
+
 #include "mbed.h"
 #include "MakisumiACMotor.h"
 #include "AS5600.h"
 
+#if defined(L1)
 #define ID 'a'
-#define MAX_ANGLE 50
-#define MIN_ANGLE -50
-#define OFFSET 2.3 //rad
+#define OFFSET -0.985056
+
+#elif defined(L2)
+#define ID 'b'
+#define OFFSET 0.549299
+
+#elif defined(R1)
+#define ID 'c'
+#define OFFSET -1.360973
+
+#elif defined(R2)
+#define ID 'd'
+#define OFFSET 2.458037
+
+#else
+#define ID 'a'
+#define OFFSET 2.3
+#endif
+
+#define MAX_ANGLE 30
+#define MIN_ANGLE -30
 #define GAIN 10.0
 
 #ifndef M_PI
@@ -22,6 +43,7 @@ AS5600 as5600(I2C_SDA, I2C_SCL);
 Serial serial(USBTX, USBRX);
 Timer t;
 float target_angle = 0;
+bool is_servo_on = false;
 
 void initialize()
 {
@@ -45,6 +67,11 @@ void isrRx() {
 			memset(buf, 0, sizeof(buf));
 			if ((t_angle > MAX_ANGLE) || (t_angle < MIN_ANGLE)) return;
 			target_angle = t_angle * M_PI / 180.0f;
+			if (is_servo_on == false){
+				acmotor.servoOn();
+				acmotor.status_changed();
+				is_servo_on = true;
+			}
 		}
 	}
 }
@@ -59,7 +86,6 @@ int main() {
 	sw.mode(PullUp);
 	serial.attach(isrRx, Serial::RxIrq);
 	
-	acmotor.servoOn();
 	as5600 = as5600 - OFFSET;
 	while(1){
 		float angle = as5600;
@@ -71,7 +97,11 @@ int main() {
 			}
 		}
 		float val = max(min(gain * (angle - target_angle), max_value), -max_value);
+#if defined(L1) || defined(L2) || defined(R1) || defined(R2)
+		acmotor = -val;
+#else
 		acmotor = val;
+#endif
 		if (sw[0] == 0 && counter == 0){
 			target_angle += 0.1;
 			counter = 25;
