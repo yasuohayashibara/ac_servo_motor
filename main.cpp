@@ -44,6 +44,7 @@ Serial serial(USBTX, USBRX);
 Timer t;
 float target_angle = 0;
 bool is_servo_on = false;
+bool change_target = false;
 
 void initialize()
 {
@@ -69,9 +70,9 @@ void isrRx() {
 			target_angle = t_angle * M_PI / 180.0f;
 			if (is_servo_on == false){
 				acmotor.servoOn();
-				acmotor.status_changed();
 				is_servo_on = true;
 			}
+			change_target = true;
 		}
 	}
 }
@@ -103,6 +104,10 @@ int main() {
 #else
 		acmotor = val;
 #endif
+		if (change_target){
+			acmotor.status_changed();
+			change_target = false;
+		}
 		if (sw[0] == 0 && counter == 0){
 			target_angle += 0.1;
 			counter = 25;
