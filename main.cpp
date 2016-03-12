@@ -26,21 +26,23 @@ void initialize()
 void isrRx() {
 	static char buf[10];
 	static int n = 0;
-	buf[n ++] = serial.getc();
-	if (n >= 10) n = 0;
-	if (buf[n-1] == '\r'){
-		int t_angle;
-		sscanf(buf, "%d", &t_angle);
-		if ((t_angle > 50) || (t_angle < -50)) return;
-		target_angle = t_angle * M_PI / 180.0f;
-		n = 0;
+	while(serial.readable()){
+		buf[n ++] = serial.getc();
+		if (n >= 10) n = 0;
+		if (buf[n-1] == '\r'){
+			int t_angle;
+			n = 0;
+			sscanf(buf, "%d", &t_angle);
+			if ((t_angle > 50) || (t_angle < -50)) return;
+			target_angle = t_angle * M_PI / 180.0f;
+		}
 	}
 }
 
 int main() {
 	int previous_hole_state = 6;
 	float gain = 10.0, max_value = 1.0;
-	int counter = 25;
+	int counter = 25, led_counter  = 100, led_state = 0;
 	initialize();
 	led = 0;
 	sw.mode(PullUp);
@@ -61,6 +63,12 @@ int main() {
 			counter = 25;
 		}
 		if (counter > 0) counter --;
+		if (led_counter == 0){
+			led_state ^= 1;
+			led[0] = led_state;
+			led_counter = 100;
+		}	
+		led_counter --;
 		t.reset();
 		t.start();
 		while(t.read() < 0.020f){
