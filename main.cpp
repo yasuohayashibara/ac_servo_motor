@@ -64,7 +64,7 @@ void isrRx() {
 			if (buf[0] != ID) return;
 			if (strlen(&buf[1] )!= 5) return;
 			sscanf(&buf[1], "%d", &t_angle);
-			printf("%d\r\n", t_angle);
+//			printf("%d\r\n", t_angle);
 			memset(buf, 0, sizeof(buf));
 			if ((t_angle > MAX_ANGLE) || (t_angle < MIN_ANGLE)) return;
 			target_angle = t_angle * M_PI / 180.0f;
