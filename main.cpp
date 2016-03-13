@@ -1,4 +1,4 @@
-//#define R1
+//#define L1
 
 #include "mbed.h"
 #include "MakisumiACMotor.h"
@@ -134,5 +134,7 @@ int main() {
 		}
 	}
 	acmotor = 0;
+	acmotor.status_changed();
 	led = 0x02;
+	while(1);
 }
