@@ -14,7 +14,6 @@ mbed/TARGET_LPC1114/TARGET_NXP/TARGET_LPC11XX_11CXX/TARGET_LPC11XX/*
 !mbed/TARGET_LPC1114/TARGET_NXP/TARGET_LPC11XX_11CXX/TARGET_LPC11XX/PinNames.h
 *.bak
 *.bin
-*.ttl
 *.htm
 *.bat
 *.dep
@@ -22,3 +21,4 @@ mbed/TARGET_LPC1114/TARGET_NXP/TARGET_LPC11XX_11CXX/TARGET_LPC11XX/*
 *.uvgui.*
 *.hgignore
 *.uvopt
+teraterm/dtr_rts.ttl

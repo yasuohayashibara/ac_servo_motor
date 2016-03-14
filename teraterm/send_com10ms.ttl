@@ -1,0 +1,21 @@
+connect '/C=3 /BAUD=460800'
+setrts 0
+setdtr 0
+
+pause 1
+sendln 'a+000'
+pause 1
+
+for i 0 300
+sprintf2 str "a+%03d" i
+sendln str
+mpause 10
+next
+
+for i 300 0
+sprintf2 str "a+%03d" i
+sendln str
+mpause 10
+next
+
+end
