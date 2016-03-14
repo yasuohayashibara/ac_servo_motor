@@ -1,4 +1,4 @@
-//#define L1
+//#define L2
 
 #include "mbed.h"
 #include "MakisumiACMotor.h"
@@ -28,6 +28,7 @@
 #define MAX_ANGLE 30
 #define MIN_ANGLE -30
 #define GAIN 10.0
+#define BAUDRATE 460800
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846f
@@ -60,14 +61,16 @@ void isrRx() {
 		if (n >= 10) n = 0;
 		if (buf[n-1] == '\r'){
 			int t_angle;
+			float f_angle;
 			n = 0;
 			if (buf[0] != ID) return;
 			if (strlen(&buf[1] )!= 5) return;
 			sscanf(&buf[1], "%d", &t_angle);
+			f_angle = (float)t_angle / 10.0f;
 //			printf("%d\r\n", t_angle);
 			memset(buf, 0, sizeof(buf));
-			if ((t_angle > MAX_ANGLE) || (t_angle < MIN_ANGLE)) return;
-			target_angle = t_angle * M_PI / 180.0f;
+			if ((f_angle > MAX_ANGLE) || (f_angle < MIN_ANGLE)) return;
+			target_angle = f_angle * M_PI / 180.0f;
 			if (is_servo_on == false){
 				acmotor.servoOn();
 				is_servo_on = true;
@@ -86,6 +89,7 @@ int main() {
 	led = 0;
 	sw.mode(PullUp);
 	serial.attach(isrRx, Serial::RxIrq);
+	serial.baud(BAUDRATE);
 	
 	as5600 = as5600 - OFFSET;
 	while(1){
