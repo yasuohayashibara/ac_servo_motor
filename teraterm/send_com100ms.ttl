@@ -1,4 +1,4 @@
-connect '/C=3 /BAUD=460800'
+connect '/C=3 /BAUD=57600'
 setrts 0
 setdtr 0
 
@@ -6,20 +6,24 @@ pause 1
 sendln 'a+000'
 pause 1
 
-for i 0 30
+while 1
 
-sprintf2 str "a+%03d" i*10
+for i 0 10
+
+sprintf2 str "a-%03d" i*10
 sendln str
 mpause 100
 
 next
 
-for i 30 0
+for i 10 0
 
-sprintf2 str "a+%03d" i*10
+sprintf2 str "a-%03d" i*10
 sendln str
 mpause 100
 
 next
+
+endwhile
 
 end
