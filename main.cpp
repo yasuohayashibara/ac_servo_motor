@@ -1,4 +1,4 @@
-//#define L2
+#define R2
 
 #include "mbed.h"
 #include "MakisumiACMotor.h"
@@ -28,7 +28,7 @@
 #define MAX_ANGLE 30
 #define MIN_ANGLE -30
 #define GAIN 10.0
-#define BAUDRATE 460800
+#define BAUDRATE 57600
 
 #ifndef M_PI
 #define M_PI           3.14159265358979323846f
