@@ -12,7 +12,7 @@
 #define HOLE_STATE5 	0x01	// 001  ( 300deg - 360deg)
 
 #define MIN_PWM 0.10
-#define OFFEST_PWM 0.08
+#define OFFEST_PWM 0.05
 
 int MakisumiACMotor::switching_table[6] [3] = {
 		{ 0, -1, 1 }, // STATE1
